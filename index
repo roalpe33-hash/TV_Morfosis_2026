@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full bg-stone-50 text-slate-950">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TVmorfosis València - Guía Interactiva</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        tvm: {
+                            yellow: '#f3c742',
+                            orange: '#e67e22',
+                            pink: '#e84393',
+                            green: '#2ecc71',
+                            blue: '#0984e3',
+                            purple: '#6c5ce7',
+                            dark: '#1e272e',
+                            light: '#fcfcfc'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts: Elegant Serif for headings and clean Sans for UI -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #faf9f6; /* Soft paper white */
+        }
+        .serif-title {
+            font-family: 'Playfair Display', serif;
+            letter-spacing: -0.02em;
+        }
+        /* Custom Scrollbar styled for the bright layout */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f0ea;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen text-slate-800">
+
+    <!-- Notificación Custom -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-white border-l-4 border-tvm-orange text-slate-900 px-5 py-4 rounded-xl shadow-2xl flex items-center gap-3">
+        <span id="toast-icon" class="text-tvm-orange">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        </span>
+        <span id="toast-message" class="text-sm font-semibold">Notificación</span>
+    </div>
+
+    <!-- Mosaico Decorativo Superior en el Header (Inspirado en la franja pixelada) -->
+    <div class="w-full h-2.5 flex">
+        <div class="flex-grow bg-emerald-500"></div>
+        <div class="flex-grow bg-yellow-400"></div>
+        <div class="flex-grow bg-orange-500"></div>
+        <div class="flex-grow bg-pink-500"></div>
+        <div class="flex-grow bg-purple-600"></div>
+        <div class="flex-grow bg-blue-500"></div>
+        <div class="flex-grow bg-slate-400"></div>
+        <div class="flex-grow bg-yellow-500"></div>
+        <div class="flex-grow bg-rose-500"></div>
+    </div>
+
+    <!-- Header Principal (Estilo Limpio e Institucional) -->
+    <header class="sticky top-0 z-40 w-full border-b border-stone-200 bg-white/90 backdrop-blur-md shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex flex-col sm:flex-row items-center justify-between gap-4 py-2">
+            <!-- Logo y Marca -->
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 border border-slate-300 p-0.5 bg-white flex flex-wrap items-center justify-center content-center gap-0.5 overflow-hidden shadow-sm">
+                    <!-- Mini mosaico imitando el logo del cartel -->
+                    <div class="w-3 h-3 bg-emerald-500"></div>
+                    <div class="w-3 h-3 bg-yellow-400"></div>
+                    <div class="w-3 h-3 bg-orange-500"></div>
+                    <div class="w-3 h-3 bg-pink-500"></div>
+                </div>
+                <div>
+                    <h1 class="text-lg sm:text-xl font-black text-slate-900 tracking-tight">
+                        <span class="text-slate-600 font-light">VNIVERSITAT <span class="serif-title italic text-sm font-normal">ID</span> VALÈNCIA</span>
+                        <span class="block text-xs font-bold uppercase tracking-widest text-slate-400 mt-0.5">#tvmorfosis</span>
+                    </h1>
+                </div>
+            </div>
+            
+            <!-- Navegación Estilo Editorial -->
+            <nav class="flex space-x-1 bg-stone-100 p-1.5 rounded-xl border border-stone-200">
+                <button onclick="changeTab('inicio')" id="nav-inicio" class="px-4 py-2 text-xs sm:text-sm font-bold rounded-lg transition-all bg-white text-slate-900 shadow-sm">
+                    Inicio
+                </button>
+                <button onclick="changeTab('programa')" id="nav-programa" class="px-4 py-2 text-xs sm:text-sm font-bold rounded-lg transition-all text-slate-500 hover:text-slate-900">
+                    Programa
+                </button>
+                <button onclick="changeTab('favoritos')" id="nav-favoritos" class="px-4 py-2 text-xs sm:text-sm font-bold rounded-lg transition-all text-slate-500 hover:text-slate-900 flex items-center gap-1.5">
+                    Mi Agenda
+                    <span id="fav-badge" class="hidden bg-tvm-orange text-white text-[10px] px-2 py-0.5 rounded-full font-extrabold">0</span>
+                </button>
+                <button onclick="changeTab('asistente')" id="nav-asistente" class="px-4 py-2 text-xs sm:text-sm font-bold rounded-lg transition-all text-slate-500 hover:text-slate-900 flex items-center gap-1.5">
+                    Asistente IA
+                    <span class="relative flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                    </span>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Contenedor Principal con la Franja Decorativa Lateral en Escritorios -->
+    <div class="flex-grow max-w-7xl w-full mx-auto flex">
+        
+        <!-- Franja de Píxeles de Colores (Diseño ID de la Imagen - Solo visible en pantallas medianas y grandes) -->
+        <aside class="hidden lg:flex flex-col w-12 flex-shrink-0 border-r border-stone-200 bg-white items-center py-6 gap-0.5 select-none relative overflow-hidden">
+            <!-- Bloques de Mosaico de Colores en degradados desestructurados como en el folleto -->
+            <div class="w-8 h-8 bg-emerald-400/80"></div>
+            <div class="w-8 h-8 bg-emerald-500"></div>
+            <div class="w-8 h-8 bg-green-600"></div>
+            <div class="w-8 h-8 bg-lime-400"></div>
+            <div class="w-8 h-8 bg-yellow-300"></div>
+            <div class="w-8 h-8 bg-yellow-400"></div>
+            <div class="w-8 h-8 bg-amber-400"></div>
+            <div class="w-8 h-8 bg-orange-400"></div>
+            <div class="w-8 h-8 bg-orange-500"></div>
+            <div class="w-8 h-8 bg-red-400"></div>
+            <div class="w-8 h-8 bg-pink-500"></div>
+            <div class="w-8 h-8 bg-pink-600"></div>
+            <div class="w-8 h-8 bg-purple-500"></div>
+            <div class="w-8 h-8 bg-indigo-600"></div>
+            <div class="w-8 h-8 bg-slate-400"></div>
+            <div class="w-8 h-8 bg-slate-300"></div>
+            <div class="w-8 h-8 bg-stone-100"></div>
+            <!-- Elemento flotante decorativo -->
+            <div class="absolute bottom-10 w-4 h-4 bg-yellow-400 rotate-45 transform"></div>
+            <div class="absolute bottom-20 w-3 h-3 bg-rose-500 rotate-12 transform"></div>
+        </aside>
+
+        <!-- Contenido Central -->
+        <main class="flex-grow px-4 sm:px-6 lg:px-8 py-8">
+            
+            <!-- ================= SECCIÓN INICIO ================= -->
+            <section id="tab-inicio" class="space-y-12">
+                
+                <!-- Hero Section - Estilo Cartel (Fondo blanco, rombos flotantes y tipografía elegante) -->
+                <div class="relative rounded-3xl border border-stone-200 bg-white p-6 sm:p-10 lg:p-12 overflow-hidden shadow-sm">
+                    <!-- Rombos de Colores Flotantes del Cartel -->
+                    <div class="absolute top-8 right-12 w-6 h-6 bg-slate-800 rotate-45 opacity-80 hidden md:block"></div>
+                    <div class="absolute bottom-12 right-24 w-8 h-8 bg-yellow-400 rotate-45 opacity-80 hidden md:block"></div>
+                    <div class="absolute top-1/2 right-4 w-4 h-4 bg-rose-500 rotate-45 opacity-80 hidden md:block"></div>
+                    <div class="absolute top-20 right-48 w-5 h-5 bg-sky-400 rotate-12 opacity-65 hidden md:block"></div>
+
+                    <div class="max-w-3xl relative z-10 space-y-6">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-bold bg-amber-400/10 text-amber-700 rounded-full border border-amber-400/20">
+                            <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                            Edición Especial Práctica y Aplicada
+                        </span>
+                        
+                        <h2 class="serif-title text-4xl sm:text-6xl font-extrabold tracking-tight text-slate-900 leading-tight">
+                            Documentación e <br>
+                            <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-600 via-pink-600 to-indigo-600">Inteligencia Artificial</span>
+                        </h2>
+
+                        <!-- Subtítulo tipo cartel -->
+                        <div class="border-y border-stone-200 py-3 my-2">
+                            <p class="text-slate-500 font-bold tracking-widest text-xs uppercase">
+                                JORNADAS DE REFLEXIÓN AUDIOVISUAL • UNIVERSITAT DE VALÈNCIA
+                            </p>
+                        </div>
+                        
+                        <p class="text-slate-600 text-sm sm:text-lg max-w-2xl leading-relaxed">
+                            El debate global de la IA suele ser abstracto. En esta edición de <strong>TVmorfosis València</strong>, abrimos la caja de herramientas de las redacciones para analizar soluciones prácticas y reales que ya están operativas en la producción audiovisual actual. No teorizamos; analizamos lo que ya funciona.
+                        </p>
+                        
+                        <div class="flex flex-wrap gap-4 pt-4">
+                            <button onclick="changeTab('programa')" class="px-6 py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm rounded-xl transition shadow-md flex items-center gap-2">
+                                Explorar el Programa
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                            </button>
+                            <button onclick="changeTab('asistente')" class="px-6 py-3 bg-stone-100 hover:bg-stone-200 text-slate-700 font-bold text-sm rounded-xl transition border border-stone-200 flex items-center gap-2">
+                                Consultar Asistente IA
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4 Ámbitos Críticos en Formato Fichas de Archivo -->
+                <div class="space-y-6">
+                    <div class="text-center sm:text-left">
+                        <h3 class="serif-title text-2xl sm:text-3xl font-bold text-slate-900">Cuatro pilares de la jornada</h3>
+                        <p class="text-slate-500 text-xs sm:text-sm mt-1">Sistemas de análisis real del ecosistema audiovisual contemporáneo.</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <!-- Ámbito 1 -->
+                        <div class="p-6 rounded-2xl border border-stone-200 bg-white hover:border-slate-400 transition duration-300 relative overflow-hidden group">
+                            <div class="absolute top-0 left-0 w-2 h-full bg-pink-500"></div>
+                            <div class="w-10 h-10 rounded-lg bg-pink-500/10 text-pink-600 flex items-center justify-center mb-4 group-hover:scale-110 transition duration-300">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                            </div>
+                            <h4 class="font-extrabold text-slate-900 mb-2">1. Redacción y Contenidos</h4>
+                            <p class="text-slate-500 text-xs leading-relaxed">Automatización práctica de escaletas, redacción de borradores y adaptación de formatos de emisión.</p>
+                        </div>
+                        <!-- Ámbito 2 -->
+                        <div class="p-6 rounded-2xl border border-stone-200 bg-white hover:border-slate-400 transition duration-300 relative overflow-hidden group">
+                            <div class="absolute top-0 left-0 w-2 h-full bg-amber-400"></div>
+                            <div class="w-10 h-10 rounded-lg bg-amber-400/10 text-amber-600 flex items-center justify-center mb-4 group-hover:scale-110 transition duration-300">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                            </div>
+                            <h4 class="font-extrabold text-slate-900 mb-2">2. Investigación de Temas</h4>
+                            <p class="text-slate-500 text-xs leading-relaxed">Estrategias de cribado de Big Data y scraping informático para identificar nuevas historias periodísticas.</p>
+                        </div>
+                        <!-- Ámbito 3 -->
+                        <div class="p-6 rounded-2xl border border-stone-200 bg-white hover:border-slate-400 transition duration-300 relative overflow-hidden group">
+                            <div class="absolute top-0 left-0 w-2 h-full bg-emerald-500"></div>
+                            <div class="w-10 h-10 rounded-lg bg-emerald-500/10 text-emerald-600 flex items-center justify-center mb-4 group-hover:scale-110 transition duration-300">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                            </div>
+                            <h4 class="font-extrabold text-slate-900 mb-2">3. Verificación de Datos</h4>
+                            <p class="text-slate-500 text-xs leading-relaxed">Fact-checking automatizado frente a deepfakes, desinformación visual y manipulación mediática.</p>
+                        </div>
+                        <!-- Ámbito 4 -->
+                        <div class="p-6 rounded-2xl border border-stone-200 bg-white hover:border-slate-400 transition duration-300 relative overflow-hidden group">
+                            <div class="absolute top-0 left-0 w-2 h-full bg-indigo-600"></div>
+                            <div class="w-10 h-10 rounded-lg bg-indigo-600/10 text-indigo-600 flex items-center justify-center mb-4 group-hover:scale-110 transition duration-300">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"></path></svg>
+                            </div>
+                            <h4 class="font-extrabold text-slate-900 mb-2">4. Documentación y Archivo</h4>
+                            <p class="text-slate-500 text-xs leading-relaxed">Catalogación desasistida, visión por computador y transcripciones para explotar repositorios históricos.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Entidades Organizadoras con un diseño institucional limpio -->
+                <div class="rounded-2xl border border-stone-200 bg-white p-6 flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div class="space-y-1">
+                        <h4 class="serif-title text-xl font-bold text-slate-900">Organización Académica e Internacional</h4>
+                        <p class="text-slate-500 text-xs sm:text-sm">Una alianza entre la educación universitaria y el tejido industrial y cultural de Iberoamérica.</p>
+                    </div>
+                    <div class="flex items-center flex-wrap gap-4">
+                        <div class="px-5 py-3 bg-stone-50 rounded-xl border border-stone-200 min-w-[160px] text-center">
+                            <span class="block text-[10px] text-slate-400 font-bold uppercase tracking-widest">Sede Oficial</span>
+                            <span class="text-slate-800 font-extrabold text-sm">Universitat de València</span>
+                        </div>
+                        <div class="px-5 py-3 bg-stone-50 rounded-xl border border-stone-200 min-w-[160px] text-center">
+                            <span class="block text-[10px] text-slate-400 font-bold uppercase tracking-widest">Red Televisiva</span>
+                            <span class="text-slate-800 font-extrabold text-sm">ATEI</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- ================= SECCIÓN PROGRAMA (Estilo Folleto de la Imagen) ================= -->
+            <section id="tab-programa" class="space-y-6 hidden">
+                <!-- Controles de Filtros y Buscador -->
+                <div class="flex flex-col sm:flex-row gap-4 items-center justify-between bg-white p-4 rounded-2xl border border-stone-200 shadow-sm">
+                    <div class="flex flex-wrap gap-2 w-full sm:w-auto">
+                        <button onclick="filterAgenda('all')" id="btn-filter-all" class="px-4 py-2 text-xs font-bold rounded-lg bg-slate-900 text-white transition">Todas las Sesiones</button>
+                        <button onclick="filterAgenda('morning')" id="btn-filter-morning" class="px-4 py-2 text-xs font-bold rounded-lg bg-stone-100 text-slate-600 hover:text-slate-900 transition">Mañana</button>
+                        <button onclick="filterAgenda('afternoon')" id="btn-filter-afternoon" class="px-4 py-2 text-xs font-bold rounded-lg bg-stone-100 text-slate-600 hover:text-slate-900 transition">Tarde</button>
+                    </div>
+                    <!-- Buscador -->
+                    <div class="relative w-full sm:w-72">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        </div>
+                        <input type="text" id="search-input" oninput="searchAgenda()" placeholder="Buscar en el programa..." class="w-full bg-stone-50 border border-stone-200 rounded-xl pl-9 pr-4 py-2 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-slate-500 transition">
+                    </div>
+                </div>
+
+                <!-- Contenedor del Listado del Programa -->
+                <div id="agenda-list" class="space-y-4">
+                    <!-- Se inyecta dinámicamente mediante JS -->
+                </div>
+            </section>
+
+
+            <!-- ================= SECCIÓN MI AGENDA (FAVORITOS) ================= -->
+            <section id="tab-favoritos" class="space-y-6 hidden">
+                <div class="bg-white p-6 rounded-2xl border border-stone-200 space-y-2 shadow-sm">
+                    <h3 class="serif-title text-2xl font-bold text-slate-900">Mi Agenda Personalizada</h3>
+                    <p class="text-slate-500 text-xs sm:text-sm">Conserva aquí las ponencias a las que tienes pensado asistir en directo en el taller de audiovisuales de la Universitat de València.</p>
+                </div>
+
+                <div id="favorites-list" class="space-y-4">
+                    <!-- Inyección dinámica -->
+                </div>
+            </section>
+
+
+            <!-- ================= SECCIÓN ASISTENTE IA ================= -->
+            <section id="tab-asistente" class="space-y-6 hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Columna Izquierda: Información -->
+                    <div class="lg:col-span-1 bg-white border border-stone-200 p-6 rounded-2xl space-y-6 shadow-sm">
+                        <div>
+                            <span class="inline-block px-2.5 py-1 text-[10px] bg-emerald-100 text-emerald-800 rounded border border-emerald-200 font-extrabold mb-2">AGENTE LOCAL</span>
+                            <h3 class="serif-title text-xl font-bold text-slate-900">Asistente de Consulta TVmorfosis</h3>
+                            <p class="text-slate-500 text-xs mt-1 leading-relaxed">
+                                Resuelve tus dudas sobre los ponentes, las mesas redondas, los horarios e implementaciones prácticas en tiempo real.
+                            </p>
+                        </div>
+                        
+                        <div class="space-y-3">
+                            <h4 class="text-xs font-bold text-slate-400 uppercase tracking-widest">Preguntas sugeridas:</h4>
+                            <div class="space-y-2">
+                                <button onclick="askBot('¿Qué se habla sobre verificación o fake news?')" class="w-full text-left text-xs bg-stone-50 hover:bg-stone-100 border border-stone-200 hover:border-slate-300 text-slate-700 p-3 rounded-xl transition font-medium">
+                                    "¿Qué se habla sobre verificación?"
+                                </button>
+                                <button onclick="askBot('Háblame sobre la mesa de televisiones locales')" class="w-full text-left text-xs bg-stone-50 hover:bg-stone-100 border border-stone-200 hover:border-slate-300 text-slate-700 p-3 rounded-xl transition font-medium">
+                                    "Háblame sobre la mesa de proximidad"
+                                </button>
+                                <button onclick="askBot('¿Cuál es el enfoque de la mesa de ingeniería de la tarde?')" class="w-full text-left text-xs bg-stone-50 hover:bg-stone-100 border border-stone-200 hover:border-slate-300 text-slate-700 p-3 rounded-xl transition font-medium">
+                                    "¿De qué trata la última mesa?"
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Columna Derecha: Chat Interactivo -->
+                    <div class="lg:col-span-2 border border-stone-200 bg-white rounded-2xl flex flex-col h-[500px] shadow-sm overflow-hidden">
+                        <!-- Encabezado del chat -->
+                        <div class="p-4 border-b border-stone-200 bg-stone-50 flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></div>
+                                <span class="text-xs font-bold text-slate-800">Asistente Virtual del Dossier</span>
+                            </div>
+                            <button onclick="clearChat()" class="text-slate-400 hover:text-slate-700 text-xs font-bold">Limpiar chat</button>
+                        </div>
+
+                        <!-- Mensajes del chat -->
+                        <div id="chat-messages" class="flex-grow p-4 overflow-y-auto space-y-4 bg-stone-50/40">
+                            <!-- Mensaje de bienvenida -->
+                            <div class="flex gap-3 max-w-[85%]">
+                                <div class="w-8 h-8 rounded-lg bg-slate-900 text-white flex items-center justify-center flex-shrink-0 text-xs font-bold shadow-sm">
+                                    TV
+                                </div>
+                                <div class="bg-white border border-stone-200 text-slate-700 px-4 py-3 rounded-2xl rounded-tl-none text-xs sm:text-sm shadow-sm leading-relaxed">
+                                    ¡Hola! Soy el asistente virtual de TVmorfosis València. Estoy preparado para ayudarte a navegar por el programa práctico. ¿Qué te gustaría saber sobre los horarios, mesas de debate, la inauguración o los participantes de este encuentro?
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Entrada del chat -->
+                        <div class="p-4 border-t border-stone-200 bg-white">
+                            <form id="chat-form" onsubmit="handleChatSubmit(event)" class="flex gap-2">
+                                <input type="text" id="chat-input" placeholder="Pregunta sobre las ponencias o mesas aquí..." class="flex-grow bg-stone-50 border border-stone-200 rounded-xl px-4 py-3 text-xs text-slate-800 focus:outline-none focus:border-slate-400">
+                                <button type="submit" class="px-5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl transition flex items-center justify-center">
+                                    Enviar
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- ================= MODAL DETALLE DE SESIÓN (Estilo Cartel Editorial) ================= -->
+    <div id="session-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm hidden transition-all duration-300">
+        <div class="bg-white border border-stone-200 w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl relative">
+            
+            <!-- Barra superior decorativa estilo píxeles -->
+            <div class="w-full h-2 flex">
+                <div class="flex-grow bg-emerald-500"></div>
+                <div class="flex-grow bg-yellow-400"></div>
+                <div class="flex-grow bg-orange-500"></div>
+                <div class="flex-grow bg-pink-500"></div>
+                <div class="flex-grow bg-purple-600"></div>
+            </div>
+
+            <!-- Cabecera del Modal -->
+            <div class="p-6 border-b border-stone-200 flex justify-between items-start gap-4">
+                <div>
+                    <span id="modal-time" class="inline-block text-xs font-bold bg-amber-100 text-amber-800 px-2.5 py-1 rounded-full mb-2">00:00 - 00:00</span>
+                    <h3 id="modal-title" class="serif-title text-xl sm:text-2xl font-bold text-slate-900">Título de la Sesión</h3>
+                </div>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-slate-800 p-1 rounded-lg bg-stone-100 hover:bg-stone-200 transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+
+            <!-- Contenido del Modal -->
+            <div class="p-6 space-y-6 max-h-[60vh] overflow-y-auto bg-stone-50/20">
+                <!-- Información General / Perfil -->
+                <div class="space-y-1.5">
+                    <h4 class="text-xs font-bold text-slate-400 uppercase tracking-widest">Ponentes / Participantes</h4>
+                    <p id="modal-participants" class="text-slate-800 text-sm font-semibold leading-relaxed">Lista de participantes</p>
+                </div>
+
+                <!-- Enfoque de Debate -->
+                <div class="space-y-3 border-t border-stone-200 pt-4">
+                    <h4 class="text-xs font-bold text-slate-400 uppercase tracking-widest">Ejes claves del debate real</h4>
+                    <ul id="modal-bullets" class="space-y-3 text-slate-600 text-xs sm:text-sm">
+                        <!-- Bullets inyectadas -->
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Pie del Modal -->
+            <div class="p-6 bg-stone-50 border-t border-stone-200 flex items-center justify-between">
+                <button id="modal-fav-btn" onclick="toggleFavFromModal()" class="px-4 py-2.5 bg-white hover:bg-stone-100 text-slate-700 font-bold text-xs rounded-xl border border-stone-200 transition flex items-center gap-2">
+                    <svg id="modal-fav-icon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                    <span>Añadir a mi agenda</span>
+                </button>
+                <button onclick="closeModal()" class="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl transition">
+                    Cerrar Ficha
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Footer Estilo Minimalista -->
+    <footer class="border-t border-stone-200 bg-white py-8 mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+            <p class="text-xs text-slate-400 font-medium">
+                &copy; 2026 TVmorfosis València — Universitat de València.
+            </p>
+            <div class="flex items-center gap-4 text-xs font-semibold text-slate-400">
+                <span>Casos Reales sobre Teorías</span>
+                <span class="text-stone-300">|</span>
+                <span>Taller d'Audiovisuals UV</span>
+                <span class="text-stone-300">|</span>
+                <span>ATEI</span>
+            </div>
+        </div>
+    </footer>
+
+
+    <!-- ================= DATOS Y CONTROLADORES JS ================= -->
+    <script>
+        // Datos de la Agenda Extraídos Directamente del Dossier de IA
+        const AGENDA_DATA = [
+            {
+                id: "inauguracion",
+                title: "Inauguración Institucional",
+                time: "09:00 – 09:30",
+                period: "morning",
+                color: "bg-emerald-500",
+                participants: "Autoridades académicas de la Universitat de València, comité organizador y directivos de la Asociación de Televisiones Educativas y Culturales Iberoamericanas (ATEI).",
+                brief: "Bienvenida oficial y contextualización estratégica del encuentro académico-profesional.",
+                bullets: [
+                    "Apertura formal de las jornadas TVmorfosis València.",
+                    "Discursos de bienvenida enfocados en el impacto de la digitalización.",
+                    "Marco estratégico de la relación entre formación universitaria e industria televisiva iberoamericana."
+                ]
+            },
+            {
+                id: "entrevista",
+                title: "Conferencia Inicial: \"El Estado del Arte Práctico\" (Formato Entrevista)",
+                time: "09:30 – 10:30",
+                period: "morning",
+                color: "bg-yellow-400",
+                participants: "Un/a periodista de renombre en el ámbito de la comunicación y la tecnología entrevistando a un/a especialista internacional en IA corporativa.",
+                brief: "Establecer la base práctica de las jornadas esquivando divagaciones teóricas.",
+                bullets: [
+                    "Análisis pormenorizado de casos de éxito ya consolidados a nivel global.",
+                    "Exposición de herramientas comerciales líderes y alternativas robustas de código abierto.",
+                    "Primeros aprendizajes prácticos y metodológicos obtenidos de la transición técnica en las redacciones."
+                ]
+            },
+            {
+                id: "pausa_cafe",
+                title: "Pausa para Café y Networking",
+                time: "10:30 – 11:00",
+                period: "morning",
+                color: "bg-stone-300",
+                participants: "Todos los asistentes, ponentes y colaboradores.",
+                brief: "Espacio informal de intercambio de ideas y contacto profesional.",
+                bullets: [
+                    "Interacción directa entre ponentes de la mañana y asistentes.",
+                    "Intercambio ágil de metodologías y contactos de empresas tecnológicas locales."
+                ]
+            },
+            {
+                id: "mesa1",
+                title: "Mesa Redonda 1: \"El Periodista Aumentado\" (Uso Diario en Redacción, Verificación y Archivo)",
+                time: "11:00 – 12:15",
+                period: "morning",
+                color: "bg-pink-500",
+                participants: "3 o 4 profesionales en activo (redactores, documentalistas y verificadores) que aplican IA de manera regular en sus flujos de información.",
+                brief: "El día a día del periodismo enriquecido por herramientas prácticas de IA.",
+                bullets: [
+                    "Demostración y debate sobre la asistencia en la redacción, traducción automática de teletipos y síntesis de temas.",
+                    "Herramientas de IA para la investigación de datos masivos y detección inteligente de patrones periodísticos.",
+                    "Software de IA aplicada a la verificación rápida de fuentes, metadatos e imágenes manipuladas (fact-checking).",
+                    "Automatización de catalogación y transcripción de voz a texto en los departamentos de archivo para agilizar el rescate audiovisual."
+                ]
+            },
+            {
+                id: "mesa2",
+                title: "Mesa Redonda 2: \"Eficiencia y Proximidad\" (La IA en las Televisiones Locales y Regionales)",
+                time: "12:15 – 13:30",
+                period: "morning",
+                color: "bg-orange-500",
+                participants: "Directores de informativos, responsables técnicos y productores de televisiones locales y de proximidad.",
+                brief: "Optimización de recursos y presupuestos ajustados mediante tecnología aplicada.",
+                bullets: [
+                    "Cómo las televisiones de proximidad, con menos recursos, adoptan la IA para multiplicar exponencialmente su capacidad de cobertura.",
+                    "Optimización del flujo de trabajo: transcripciones, subtitulados automáticos inmediatos en lenguas cooficiales y distribución multiplataforma dinámica.",
+                    "Ejemplos reales de automatización de tareas mecánicas cotidianas para liberar tiempo para la investigación de campo y cercanía vecinal."
+                ]
+            },
+            {
+                id: "mesa3",
+                title: "Mesa Redonda 3: \"Estrategias de Escala\" (Perspectiva Global, Alianzas e Implantación corporativa de IA)",
+                time: "15:30 – 16:45",
+                period: "afternoon",
+                color: "bg-blue-500",
+                participants: "Representantes de ATEI y altos directivos de grandes organizaciones empresariales y corporaciones de radiotelevisión nacional e iberoamericana.",
+                brief: "Planificación, gobernanza e implantación tecnológica de gran escala.",
+                bullets: [
+                    "Cómo se diseña e implementa una estrategia de adopción de Inteligencia Artificial a escala corporativa internacional.",
+                    "La importancia de la cooperación transnacional y alianzas entre cadenas (intercambio de software, modelos LLM especializados en español e iberoamericano).",
+                    "Retos organizativos esenciales: infraestructura técnica compartida, códigos éticos internos y capacitación intensiva de plantillas."
+                ]
+            },
+            {
+                id: "mesa4",
+                title: "Mesa Redonda 4: \"La Frontera del Conocimiento\" (Perspectivas de Futuro desde la Ingeniería y la Academia)",
+                time: "16:45 – 18:00",
+                period: "afternoon",
+                color: "bg-purple-600",
+                participants: "Científicos de datos, ingenieros de IA especializados en lenguaje natural (NLP) y visión computacional, y académicos investigadores.",
+                brief: "Análisis del horizonte tecnológico de corto-medio plazo de los laboratorios a los medios.",
+                bullets: [
+                    "Qué tecnologías experimentales universitarias se trasladarán a las redacciones reales en los próximos 2 a 5 años.",
+                    "Avances en IA generativa multimodal adaptada a la creación ética de contenido audiovisual sintético y avatares realistas.",
+                    "Modelos analíticos predictivos para comprender audiencias complejas e hiperpersonalizar la distribución de contenidos de forma automática.",
+                    "El rol clave de la universidad en el codiseño y formación de los nuevos perfiles híbridos (periodistas-programadores e ingenieros de contenido)."
+                ]
+            },
+            {
+                id: "clausura",
+                title: "Conclusiones, Lectura de Manifiesto y Clausura",
+                time: "18:00 – 18:30",
+                period: "afternoon",
+                color: "bg-slate-800",
+                participants: "Organizadores de la Universitat de València y portavoces de ATEI.",
+                brief: "Resumen ejecutivo de la jornada y compromisos para el futuro práctico de los medios.",
+                bullets: [
+                    "Recopilación de las conclusiones operativas clave de las cuatro mesas redondas.",
+                    "Lectura oficial de la declaración/manifiesto de la edición de TVmorfosis València.",
+                    "Clausura de la jornada e invitaciones a futuros foros de cooperación técnica."
+                ]
+            }
+        ];
+
+        // Estado de la Aplicación en Memoria
+        let currentTab = 'inicio';
+        let currentFilter = 'all';
+        let searchQuery = '';
+        let favorites = JSON.parse(localStorage.getItem('tvm_favorites') || '[]');
+        let activeModalSessionId = null;
+
+        // Cambiar de Pestaña Principal (Navegación)
+        function changeTab(tabId) {
+            // Ocultar todas las pestañas
+            document.getElementById('tab-inicio').classList.add('hidden');
+            document.getElementById('tab-programa').classList.add('hidden');
+            document.getElementById('tab-favoritos').classList.add('hidden');
+            document.getElementById('tab-asistente').classList.add('hidden');
+
+            // Quitar estilos activos de botones de navegación
+            const navs = ['inicio', 'programa', 'favoritos', 'asistente'];
+            navs.forEach(nav => {
+                const element = document.getElementById(`nav-${nav}`);
+                if (element) {
+                    element.className = "px-4 py-2 text-xs sm:text-sm font-bold rounded-lg transition-all text-slate-500 hover:text-slate-900";
+                }
+            });
+
+            // Mostrar pestaña seleccionada y activar su botón
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+            document.getElementById(`nav-${tabId}`).className = "px-4 py-2 text-xs sm:text-sm font-bold rounded-lg transition-all bg-white text-slate-900 shadow-sm";
+
+            currentTab = tabId;
+
+            // Renderizados específicos al cambiar
+            if (tabId === 'programa') {
+                renderAgenda();
+            } else if (tabId === 'favoritos') {
+                renderFavorites();
+            }
+        }
+
+        // Renderizar Lista General de la Agenda con Filtros y Buscador
+        function renderAgenda() {
+            const listContainer = document.getElementById('agenda-list');
+            listContainer.innerHTML = '';
+
+            const filtered = AGENDA_DATA.filter(session => {
+                // Filtro por periodo horario
+                if (currentFilter === 'morning' && session.period !== 'morning') return false;
+                if (currentFilter === 'afternoon' && session.period !== 'afternoon') return false;
+
+                // Filtro de búsqueda
+                if (searchQuery.trim() !== '') {
+                    const query = searchQuery.toLowerCase();
+                    const titleMatch = session.title.toLowerCase().includes(query);
+                    const participantsMatch = session.participants.toLowerCase().includes(query);
+                    const briefMatch = session.brief.toLowerCase().includes(query);
+                    const bulletMatch = session.bullets.some(b => b.toLowerCase().includes(query));
+                    return titleMatch || participantsMatch || briefMatch || bulletMatch;
+                }
+
+                return true;
+            });
+
+            if (filtered.length === 0) {
+                listContainer.innerHTML = `
+                    <div class="text-center py-12 border border-dashed border-stone-300 rounded-2xl bg-white">
+                        <p class="text-slate-400 text-sm font-semibold">No se encontraron sesiones que coincidan con la búsqueda.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            filtered.forEach(session => {
+                const isFav = favorites.includes(session.id);
+                const sessionCard = document.createElement('div');
+                sessionCard.className = "p-5 sm:p-6 rounded-2xl border border-stone-200 bg-white hover:border-slate-400 hover:shadow-md transition duration-300 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 relative overflow-hidden";
+                
+                // Aplicar barra lateral izquierda del color distintivo del cartel
+                sessionCard.innerHTML = `
+                    <div class="absolute top-0 left-0 w-2.5 h-full ${session.color}"></div>
+                    <div class="flex-grow space-y-2.5 pl-4 max-w-3xl">
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-stone-100 text-slate-800 border border-stone-200">
+                                <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                ${session.time}
+                            </span>
+                            <span class="text-xs text-slate-400 font-extrabold uppercase tracking-widest">${session.period === 'morning' ? 'Bloque Mañana' : 'Bloque Tarde'}</span>
+                        </div>
+                        <h4 class="text-lg font-bold text-slate-900 leading-tight">${session.title}</h4>
+                        <p class="text-slate-500 text-xs sm:text-sm line-clamp-2 leading-relaxed">${session.brief}</p>
+                    </div>
+                    <div class="flex items-center gap-2 w-full md:w-auto justify-end md:justify-start pl-4 md:pl-0">
+                        <button onclick="toggleFavorite('${session.id}', event)" class="p-2.5 rounded-xl border border-stone-200 hover:border-rose-300 bg-white hover:bg-rose-50/30 text-slate-400 hover:text-rose-500 transition" title="Marcar como favorita">
+                            <svg class="w-5 h-5 ${isFav ? 'fill-rose-500 text-rose-500' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                        </button>
+                        <button onclick="openModal('${session.id}')" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 border border-stone-200 rounded-xl font-bold text-xs transition flex-grow md:flex-grow-0 text-center">
+                            Detalles de la sesión
+                        </button>
+                    </div>
+                `;
+                listContainer.appendChild(sessionCard);
+            });
+        }
+
+        // Filtrar Programa
+        function filterAgenda(period) {
+            currentFilter = period;
+            
+            // Actualizar diseño de los botones de filtro
+            const buttons = ['all', 'morning', 'afternoon'];
+            buttons.forEach(btn => {
+                const element = document.getElementById(`btn-filter-${btn}`);
+                if (btn === period) {
+                    element.className = "px-4 py-2 text-xs font-bold rounded-lg bg-slate-900 text-white transition";
+                } else {
+                    element.className = "px-4 py-2 text-xs font-bold rounded-lg bg-stone-100 text-slate-500 hover:text-slate-900 transition";
+                }
+            });
+
+            renderAgenda();
+        }
+
+        // Buscar en la Agenda
+        function searchAgenda() {
+            searchQuery = document.getElementById('search-input').value;
+            renderAgenda();
+        }
+
+        // Renderizar Lista de Sesiones Favoritas
+        function renderFavorites() {
+            const listContainer = document.getElementById('favorites-list');
+            listContainer.innerHTML = '';
+
+            if (favorites.length === 0) {
+                listContainer.innerHTML = `
+                    <div class="text-center py-12 border border-dashed border-stone-300 rounded-2xl bg-white">
+                        <p class="text-slate-400 text-sm font-semibold">Aún no has seleccionado ninguna sesión. Explora el "Programa" y pulsa sobre el icono de corazón.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const favSessions = AGENDA_DATA.filter(session => favorites.includes(session.id));
+
+            favSessions.forEach(session => {
+                const sessionCard = document.createElement('div');
+                sessionCard.className = "p-5 rounded-2xl border border-stone-200 bg-white hover:border-slate-400 transition flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 relative overflow-hidden";
+                
+                sessionCard.innerHTML = `
+                    <div class="absolute top-0 left-0 w-2.5 h-full ${session.color}"></div>
+                    <div class="space-y-1.5 pl-4 max-w-xl">
+                        <span class="inline-flex items-center gap-1 text-xs font-bold text-slate-500">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            ${session.time}
+                        </span>
+                        <h4 class="text-base font-bold text-slate-900 leading-tight">${session.title}</h4>
+                        <p class="text-slate-400 text-xs sm:text-sm line-clamp-1">${session.brief}</p>
+                    </div>
+                    <div class="flex items-center gap-2 w-full sm:w-auto justify-end pl-4 sm:pl-0">
+                        <button onclick="toggleFavorite('${session.id}', null)" class="px-3 py-2 bg-rose-50 hover:bg-rose-100 text-slate-700 hover:text-rose-600 border border-stone-200 rounded-xl text-xs font-bold transition">
+                            Quitar
+                        </button>
+                        <button onclick="openModal('${session.id}')" class="px-3 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition">
+                            Ficha
+                        </button>
+                    </div>
+                `;
+                listContainer.appendChild(sessionCard);
+            });
+        }
+
+        // Marcar/Desmarcar Favorito
+        function toggleFavorite(sessionId, event) {
+            if (event) event.stopPropagation();
+
+            const index = favorites.indexOf(sessionId);
+            let added = false;
+            if (index > -1) {
+                favorites.splice(index, 1);
+            } else {
+                favorites.push(sessionId);
+                added = true;
+            }
+
+            localStorage.setItem('tvm_favorites', JSON.stringify(favorites));
+            updateFavBadges();
+
+            // Mostrar toast
+            const sessionTitle = AGENDA_DATA.find(s => s.id === sessionId)?.title;
+            const shortTitle = sessionTitle ? (sessionTitle.substring(0, 30) + '...') : 'Sesión';
+            showToast(added ? `Agregada a mi agenda: ${shortTitle}` : `Quitada de mi agenda: ${shortTitle}`);
+
+            // Refrescar las listas
+            if (currentTab === 'programa') renderAgenda();
+            if (currentTab === 'favoritos') renderFavorites();
+        }
+
+        // Actualizar indicadores visuales de favoritos en cabecera
+        function updateFavBadges() {
+            const badge = document.getElementById('fav-badge');
+            if (favorites.length > 0) {
+                badge.innerText = favorites.length;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+
+        // Mostrar Toast Customizado
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-message').innerText = message;
+            
+            // Animación Entrada
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                // Animación Salida
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        // Modales - Abrir Ficha Detallada
+        function openModal(sessionId) {
+            const session = AGENDA_DATA.find(s => s.id === sessionId);
+            if (!session) return;
+
+            activeModalSessionId = sessionId;
+            document.getElementById('modal-time').innerText = `${session.time} — Bloque ${session.period === 'morning' ? 'Mañana' : 'Tarde'}`;
+            document.getElementById('modal-title').innerText = session.title;
+            document.getElementById('modal-participants').innerText = session.participants;
+
+            const bulletsContainer = document.getElementById('modal-bullets');
+            bulletsContainer.innerHTML = '';
+            session.bullets.forEach(bullet => {
+                const li = document.createElement('li');
+                li.className = "flex gap-2.5 items-start leading-relaxed";
+                li.innerHTML = `
+                    <span class="w-2 h-2 rounded-full bg-slate-800 mt-1.5 flex-shrink-0"></span>
+                    <span>${bullet}</span>
+                `;
+                bulletsContainer.appendChild(li);
+            });
+
+            // Ajustar estado botón de favorito en modal
+            const isFav = favorites.includes(sessionId);
+            const favBtn = document.getElementById('modal-fav-btn');
+            const favIcon = document.getElementById('modal-fav-icon');
+
+            if (isFav) {
+                favBtn.className = "px-4 py-2.5 bg-rose-50 text-slate-800 font-bold text-xs rounded-xl border border-rose-100 transition flex items-center gap-2";
+                favBtn.querySelector('span').innerText = "Quitar de mi agenda";
+                favIcon.className = "w-4 h-4 fill-rose-500 text-rose-500";
+            } else {
+                favBtn.className = "px-4 py-2.5 bg-white hover:bg-stone-100 text-slate-700 font-bold text-xs rounded-xl border border-stone-200 transition flex items-center gap-2";
+                favBtn.querySelector('span').innerText = "Añadir a mi agenda";
+                favIcon.className = "w-4 h-4 text-slate-400";
+            }
+
+            // Mostrar Modal
+            const modal = document.getElementById('session-modal');
+            modal.classList.remove('hidden');
+        }
+
+        // Modales - Cerrar
+        function closeModal() {
+            document.getElementById('session-modal').classList.add('hidden');
+            activeModalSessionId = null;
+        }
+
+        // Favoritos desde Modal
+        function toggleFavFromModal() {
+            if (!activeModalSessionId) return;
+            toggleFavorite(activeModalSessionId, null);
+            // Re-abrir para refrescar el estado del botón
+            openModal(activeModalSessionId);
+        }
+
+
+        // ================= CHATBOT SIMULADO (IA DE CONSULTA) =================
+        function handleChatSubmit(e) {
+            e.preventDefault();
+            const input = document.getElementById('chat-input');
+            const text = input.value.trim();
+            if (text === '') return;
+
+            addChatMessage('user', text);
+            input.value = '';
+
+            setTimeout(() => {
+                const botResponse = generateBotResponse(text);
+                addChatMessage('bot', botResponse);
+            }, 600);
+        }
+
+        function askBot(pregunta) {
+            changeTab('asistente');
+            addChatMessage('user', pregunta);
+            setTimeout(() => {
+                const respuesta = generateBotResponse(pregunta);
+                addChatMessage('bot', respuesta);
+            }, 600);
+        }
+
+        function addChatMessage(sender, text) {
+            const container = document.getElementById('chat-messages');
+            const messageDiv = document.createElement('div');
+            
+            if (sender === 'user') {
+                messageDiv.className = "flex gap-3 justify-end ml-auto max-w-[85%]";
+                messageDiv.innerHTML = `
+                    <div class="bg-slate-900 text-white px-4 py-3 rounded-2xl rounded-tr-none text-xs sm:text-sm font-medium leading-relaxed shadow-sm">
+                        ${text}
+                    </div>
+                `;
+            } else {
+                messageDiv.className = "flex gap-3 max-w-[85%]";
+                messageDiv.innerHTML = `
+                    <div class="w-8 h-8 rounded-lg bg-slate-950 text-white flex items-center justify-center flex-shrink-0 text-xs font-bold shadow-sm">
+                        TV
+                    </div>
+                    <div class="bg-white border border-stone-200 text-slate-700 px-4 py-3 rounded-2xl rounded-tl-none text-xs sm:text-sm shadow-sm leading-relaxed">
+                        ${text}
+                    </div>
+                `;
+            }
+
+            container.appendChild(messageDiv);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function clearChat() {
+            const container = document.getElementById('chat-messages');
+            container.innerHTML = '';
+            addChatMessage('bot', 'Historial limpio. ¿En qué más puedo ayudarte acerca de las jornadas de TVmorfosis?');
+        }
+
+        // Generador de respuestas inteligentes sobre el dossier actual de IA
+        function generateBotResponse(query) {
+            const text = query.toLowerCase();
+
+            if (text.includes('verificación') || text.includes('fake news') || text.includes('desinformación') || text.includes('fact-checking')) {
+                return `La verificación se tratará en profundidad por la mañana en la <strong>Mesa Redonda 1: "El Periodista Aumentado" (de 11:00 a 12:15)</strong>. En ella, profesionales en activo compartirán cómo utilizan el software de IA para la verificación rápida de fuentes, metadatos e imágenes manipuladas en tiempo real.`;
+            }
+            if (text.includes('local') || text.includes('proximidad') || text.includes('regional')) {
+                return `La aplicación en medios de proximidad se debatirá en la <strong>Mesa Redonda 2: "Eficiencia y Proximidad" (de 12:15 a 13:30)</strong>. Se analizará cómo las televisiones locales optimizan sus recursos limitados aplicando IA para tareas automatizadas de transcripción, subtitulados en lenguas cooficiales y distribución ágil.`;
+            }
+            if (text.includes('futuro') || text.includes('ingeniería') || text.includes('laboratorios') || text.includes('academia') || text.includes('científicos')) {
+                return `La investigación de vanguardia se concentra en la <strong>Mesa Redonda 4: "La Frontera del Conocimiento" (de 16:45 a 18:00)</strong>. Participarán científicos de datos e ingenieros de IA debatiendo sobre el horizonte de los próximos 2 a 5 años (vídeo sintético ético, modelos predictivos y formación híbrida).`;
+            }
+            if (text.includes('organizan') || text.includes('universidad') || text.includes('atei')) {
+                return `Las jornadas están organizadas conjuntamente por la <strong>Universitat de València</strong> (taller d'Audiovisuals) y la Asociación de Televisiones Educativas y Culturales Iberoamericanas (<strong>ATEI</strong>). La bienvenida oficial se realiza a las 09:00.`;
+            }
+            if (text.includes('entrevista') || text.includes('conferencia inicial') || text.includes('estado del arte')) {
+                return `La jornada abre con una <strong>Conferencia Inicial en formato de entrevista ágil (de 09:30 a 10:30)</strong>. Un periodista de renombre conversará con un especialista sobre herramientas ya operativas en el mercado y las primeras lecciones organizativas de la transición.`;
+            }
+            if (text.includes('estrategia') || text.includes('corporativa') || text.includes('alianza') || text.includes('escala')) {
+                return `Los planes a nivel organizativo y corporativo se tratarán en la <strong>Mesa Redonda 3: "Estrategias de Escala" (de 15:30 a 16:45)</strong>. Se centrará en el papel de redes como ATEI para crear alianzas internacionales e implantar modelos lingüísticos especializados en español.`;
+            }
+            if (text.includes('archivo') || text.includes('documentación') || text.includes('catalogar')) {
+                return `La catalogación y rescate de patrimonio mediante IA se abordará en la <strong>Mesa Redonda 1 (de 11:00 a 12:15)</strong>, donde se presentarán casos reales de transcripción e indexación desasistida mediante visión por computador.`;
+            }
+            if (text.includes('horario') || text.includes('agenda') || text.includes('programa')) {
+                return `La jornada se divide en un bloque de mañana (de 09:00 a 13:30, que incluye Inauguración, Entrevista Inicial y las Mesas Redondas 1 y 2) y un bloque de tarde (de 15:30 a 18:30, con las Mesas Redondas 3 y 4, seguido por las Conclusiones y Clausura).`;
+            }
+
+            return `Este encuentro de TVmorfosis València está plenamente enfocado en la <strong>aplicación práctica de la IA</strong> (redacción de temas, investigación de datos, verificación sistemática de desinformación y catalogación de archivos). Te recomiendo buscar mesas específicas en la sección "Programa" o revisar las fichas en detalle.`;
+        }
+
+        // Inicializar Estado al Cargar
+        window.onload = function() {
+            updateFavBadges();
+            renderAgenda();
+        }
+    </script>
+</body>
+</html>
